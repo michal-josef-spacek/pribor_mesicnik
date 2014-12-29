@@ -54,7 +54,7 @@ my @pages = get_pages($base_uri);
 # Get all items.
 foreach my $page (@pages) {
 	print "$page\n";
-	foreach my $item_hr (get_items($page)) {
+	foreach my $item_hr (get_items(URI->new($page))) {
 		my $title = decode_utf8($item_hr->{'title'});
 		print '- '.encode_utf8($title)."\n";
 		my ($month_word, $year) = $title =~ m/(\w+)\s+(\d+)\s*$/ms;
@@ -85,7 +85,7 @@ sub get_content {
 # Get items.
 sub get_items {
 	my $page_uri = shift;
-	my $content = get_content($base_uri);
+	my $content = get_content($page_uri);
 	my $def = scraper {
 		process '//div[@class="pr_pad content"]/div[@class="attachments"]/div[@class="attachment"]',
 			'items[]' => scraper {
