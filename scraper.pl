@@ -59,13 +59,27 @@ foreach my $page (@pages) {
 		print '- '.encode_utf8($title)."\n";
 		my ($month_word, $year) = $title =~ m/(\w+)\s+(\d+)\s*$/ms;
 		my $month = $DATE_WORD_HR->{$month_word};
-		my $md5 = md5($item_hr->{'href'});
-		$dt->insert({
-			'Year' => $year,
-			'PDF_link' => $item_hr->{'href'},
-			'Month' => $month,
-			'MD5' => $md5,
-		});
+
+		# Save.
+		my $ret_ar = eval {
+			$dt->execute('SELECT COUNT(*) FROM data '.
+				'WHERE PDF_link = ?', $item_hr->{'href'});
+		};
+		if ($EVAL_ERROR || ! @{$ret_ar}
+			|| ! exists $ret_ar->[0]->{'count(*)'}
+			|| ! defined $ret_ar->[0]->{'count(*)'}
+			|| $ret_ar->[0]->{'count(*)'} == 0) {
+
+			my $md5 = md5($item_hr->{'href'});
+			$dt->insert({
+				'Year' => $year,
+				'PDF_link' => $item_hr->{'href'},
+				'Month' => $month,
+				'MD5' => $md5,
+			});
+			$dt->create_index(['PDF_link'], 'data', 1, 1);
+			$dt->create_index(['MD5'], 'data', 1, 0);
+		}
 	}
 }
 
