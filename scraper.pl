@@ -1,7 +1,11 @@
 #!/usr/bin/env perl
 # Copyright 2014 Michal Špaček <tupinek@gmail.com>
 
+# For library loading.
+use FindBin;
+
 # Pragmas.
+use lib $FindBin::Bin;
 use strict;
 use warnings;
 
